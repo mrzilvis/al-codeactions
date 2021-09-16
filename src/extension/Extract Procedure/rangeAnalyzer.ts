@@ -53,6 +53,7 @@ export class RangeAnalyzer {
         this.log(pathToStart, pathToEnd, blockNode);
 
         if (this.treeNodeToExtractStart === this.treeNodeToExtractEnd) {
+            // ZBA. This is where it goes out if comments are included
             if (!this.isWholeTreeNodeWithChildsSelected(this.treeNodeToExtractStart, this.selectedRange)) {
                 return;
             }
@@ -180,6 +181,7 @@ export class RangeAnalyzer {
             rangeToReturn = this.selectedRange;
         }
         return DocumentUtils.trimRange(this.document, rangeToReturn);
+        // return rangeToReturn;
     }
     private checkKindReducedLevelsStandalone(treeNode: ALFullSyntaxTreeNode): boolean {
         let validKinds: string[] = [

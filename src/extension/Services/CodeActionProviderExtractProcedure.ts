@@ -42,9 +42,10 @@ export class CodeActionProviderExtractProcedure implements ICodeActionProvider {
     async createCodeActions(): Promise<CodeAction[]> {
         let rangeAnalyzer: RangeAnalyzer = new RangeAnalyzer(this.document, this.range);
         await rangeAnalyzer.analyze();
-        if (!rangeAnalyzer.isValidToExtract()) {
-            return [];
-        }
+        // ZBA. This is where validation happens. Commenting following statement will allow to extract anything but it will not necessarily extract the code correctly. 
+        // if (!rangeAnalyzer.isValidToExtract()) { 
+        //     return [];
+        // }
         let rangeExpanded: Range = rangeAnalyzer.getExpandedRange();
         let treeNodeStart: ALFullSyntaxTreeNode = rangeAnalyzer.getTreeNodeToExtractStart();
         let treeNodeEnd: ALFullSyntaxTreeNode = rangeAnalyzer.getTreeNodeToExtractEnd();

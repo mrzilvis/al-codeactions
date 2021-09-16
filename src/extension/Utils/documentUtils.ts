@@ -185,28 +185,28 @@ export class DocumentUtils {
     public static trimRange2(fileLines: string[], currentRange: Range) {
         let newStart: Position = currentRange.start;
         let newEnd: Position = currentRange.end;
-        let searchClosingTag: boolean = false;
-        for (let i = currentRange.start.line; i <= currentRange.end.line; i++) {
-            let startPositionToSearch = i === currentRange.start.line ? currentRange.start.character : 0;
-            let textRestOfLine = fileLines[i].substring(startPositionToSearch);
-            if (searchClosingTag) {
-                if (!textRestOfLine.includes('*/')) { continue; } else {
-                    textRestOfLine = textRestOfLine.substring(textRestOfLine.indexOf('*/') + 2);
-                    searchClosingTag = false;
-                }
-            }
-            if (textRestOfLine.trimLeft().length > 0) {
-                if (textRestOfLine.trimLeft().startsWith('//')) {
-                    continue;
-                } else if (textRestOfLine.trimLeft().startsWith('/*')) {
-                    searchClosingTag = true;
-                    i--;
-                    continue;
-                }
-                newStart = new Position(i, fileLines[i].lastIndexOf(textRestOfLine.trimLeft()));
-                break;
-            }
-        }
+        // let searchClosingTag: boolean = false;
+        // for (let i = currentRange.start.line; i <= currentRange.end.line; i++) {
+        //     let startPositionToSearch = i === currentRange.start.line ? currentRange.start.character : 0;
+        //     let textRestOfLine = fileLines[i].substring(startPositionToSearch);
+        //     if (searchClosingTag) {
+        //         if (!textRestOfLine.includes('*/')) { continue; } else {
+        //             textRestOfLine = textRestOfLine.substring(textRestOfLine.indexOf('*/') + 2);
+        //             searchClosingTag = false;
+        //         }
+        //     }
+        //     if (textRestOfLine.trimLeft().length > 0) {
+        //         if (textRestOfLine.trimLeft().startsWith('//')) {
+        //             continue;
+        //         } else if (textRestOfLine.trimLeft().startsWith('/*')) {
+        //             searchClosingTag = true;
+        //             i--;
+        //             continue;
+        //         }
+        //         newStart = new Position(i, fileLines[i].lastIndexOf(textRestOfLine.trimLeft()));
+        //         break;
+        //     }
+        // }
         let searchForOpeningTag: Boolean = false;
         for (let i = currentRange.end.line; i >= newStart.line; i--) {
             let endPositionToSearch = i === currentRange.end.line ? currentRange.end.character : fileLines[i].length;
