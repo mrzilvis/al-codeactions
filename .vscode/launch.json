@@ -16,7 +16,13 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "npm: compile"
+			"preLaunchTask": "npm: compile",
+			"skipFiles": [
+				"<node_internals>/**/*.js",
+				"${workspaceFolder}/node_modules/**/*.js",
+				"${workspaceFolder}/out/**/*.js",
+				"**/app/out/vs/**",
+			  ]
 		},
 		{
 			"name": "Extension Tests",

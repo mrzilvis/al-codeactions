@@ -1,4 +1,4 @@
-import { TextDocument, Range, CodeAction, Position, Location, commands, CodeActionKind, WorkspaceEdit } from 'vscode';
+import { TextDocument, Range, CodeAction, Position, Location, commands, CodeActionKind, WorkspaceEdit, Uri, workspace } from 'vscode';
 import { ALFullSyntaxTreeNodeExt } from '../AL Code Outline Ext/alFullSyntaxTreeNodeExt';
 import { FullSyntaxTreeNodeKind } from '../AL Code Outline Ext/fullSyntaxTreeNodeKind';
 import { SyntaxTreeExt } from '../AL Code Outline Ext/syntaxTreeExt';
@@ -43,9 +43,9 @@ export class CodeActionProviderExtractProcedure implements ICodeActionProvider {
         let rangeAnalyzer: RangeAnalyzer = new RangeAnalyzer(this.document, this.range);
         await rangeAnalyzer.analyze();
         // ZBA. This is where validation happens. Commenting following statement will allow to extract anything but it will not necessarily extract the code correctly. 
-        // if (!rangeAnalyzer.isValidToExtract()) { 
-        //     return [];
-        // }
+        if (!rangeAnalyzer.isValidToExtract()) {
+            return [];
+        }
         let rangeExpanded: Range = rangeAnalyzer.getExpandedRange();
         let treeNodeStart: ALFullSyntaxTreeNode = rangeAnalyzer.getTreeNodeToExtractStart();
         let treeNodeEnd: ALFullSyntaxTreeNode = rangeAnalyzer.getTreeNodeToExtractEnd();
@@ -153,8 +153,23 @@ export class CodeActionProviderExtractProcedure implements ICodeActionProvider {
         if (!objectTreeNode) {
             Err._throw('Unable to find object tree node');
         }
+
+        let newDoc: TextDocument = document;
+        let newSyntaxTree: SyntaxTree;
+        await workspace.openTextDocument("C:\\Users\\ZBARTKUS\\source\\Cust2EventsTest\\J006295 - Cosmo Consult Elitech BaseApp-1\\Subscribers.Codeunit.al").then(document => {
+            newDoc = document;
+        });
+        newSyntaxTree = await SyntaxTree.getInstance(newDoc);
+
+        let newObjectTreeNode: ALFullSyntaxTreeNode | undefined = await SyntaxTreeExt.getObjectTreeNode(newSyntaxTree, new Position(0, 0));
+        if (!newObjectTreeNode) {
+            Err._throw('Unable to find object tree node');
+        }
+        let newAlObject: ALObject = await ALObjectParser.parseObjectTreeNodeToALObject(newDoc, newObjectTreeNode);
+
+        // ZBA. This is where AL Object, where procedure will be created, is specified. 
         let alObject: ALObject = ALObjectParser.parseObjectTreeNodeToALObject(document, objectTreeNode);
-        procedure = new ALProcedure(RenameMgt.newProcedureName, parameters, variables, returnType, AccessModifier.local, [], false, false, alObject);
+        procedure = new ALProcedure(RenameMgt.newProcedureName, parameters, variables, returnType, AccessModifier.local, [], false, false, newAlObject);
         let selectedText: string = document.getText(rangeExpanded).trim();
         if (returnType && returnTypeAnalyzer.getAddVariableToExtractedRange()) {
             let returnVariableName = 'returnValue';
